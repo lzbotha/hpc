@@ -6,6 +6,8 @@ AsignmentHPC2015Edit3.pdf
 Histogram_Bins_0005__v000.png
 data
 tool
+.depend
+tests/.depend
 
 # Compiled Object files
 *.slo
