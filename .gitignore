@@ -8,6 +8,7 @@ data
 tool
 .depend
 tests/.depend
+tests/tests
 
 # Compiled Object files
 *.slo

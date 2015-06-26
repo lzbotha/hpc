@@ -9,10 +9,10 @@ void TestUtils::tearDown() {
 
 }
 
-void testFileReading() {
-
+void TestUtils::testFileReading() {
+    CPPUNIT_ASSERT_EQUAL(1, 1);
 }
 
-void testFileWriting() {
-    
+void TestUtils::testFileWriting() {
+    CPPUNIT_ASSERT_EQUAL(1, 2);
 }

@@ -2,10 +2,14 @@
 #define _UTILS_TEST
 
 #include <cppunit/TestFixture.h>
-#include "test_utils.h"
+#include <cppunit/extensions/HelperMacros.h>
 
 class TestUtils : public CppUnit::TestFixture {
-    private:
+
+    CPPUNIT_TEST_SUITE(TestUtils);
+    CPPUNIT_TEST(testFileReading);
+    CPPUNIT_TEST(testFileWriting);
+    CPPUNIT_TEST_SUITE_END();
 
     public:
         // Memory managemenet stuff
@@ -16,5 +20,7 @@ class TestUtils : public CppUnit::TestFixture {
         void testFileReading();
         void testFileWriting();
 };
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TestUtils );
 
 #endif
