@@ -37,7 +37,7 @@ float ** utils::readFile(std::string filename) {
     return arr;
 }
 
-bool outputToCSV(float ** arr, int size, std::string filename) {
+bool utils::outputToCSV(float ** arr, int size, std::string filename) {
     using namespace std;
 
     ofstream file(filename);
@@ -48,6 +48,7 @@ bool outputToCSV(float ** arr, int size, std::string filename) {
     // add bin numbers
     for (int col = 0; col < size; ++col)
         file << "," << col;
+    file << endl;
 
     for (int row = 0; row < size; ++row) {
         // add the row number
@@ -56,6 +57,7 @@ bool outputToCSV(float ** arr, int size, std::string filename) {
         for (int col = 1; col < size; ++ col) {
             file << "," << arr[row][col];
         }
+        file << endl;
     }
 
     file.close();
