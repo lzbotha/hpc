@@ -1,0 +1,2 @@
+main.o: main.cpp utils.h
+utils.o: utils.cpp utils.h

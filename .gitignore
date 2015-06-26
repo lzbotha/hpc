@@ -1,0 +1,36 @@
+Makefile
+Makefile-simple
+sample.csv
+histogram.py
+AsignmentHPC2015Edit3.pdf
+Histogram_Bins_0005__v000.png
+data
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
