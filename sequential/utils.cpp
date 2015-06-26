@@ -28,8 +28,6 @@ float ** utils::readFile(std::string filename) {
     for (int i = 0; i < bytes; i+= 8) {
         // Read in 2 floats from file
         arr[i/8] = new float[2];
-        // float x;
-        // float y;
         file.read(reinterpret_cast<char*>(&arr[i/8][0]), sizeof(float));
         file.read(reinterpret_cast<char*>(&arr[i/8][1]), sizeof(float));
     }
