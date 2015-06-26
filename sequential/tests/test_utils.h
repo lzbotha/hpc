@@ -11,6 +11,9 @@ class TestUtils : public CppUnit::TestFixture {
     CPPUNIT_TEST(testFileWriting);
     CPPUNIT_TEST_SUITE_END();
 
+    private:
+        float ** arr;
+
     public:
         // Memory managemenet stuff
         void setUp();
