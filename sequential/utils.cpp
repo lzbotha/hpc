@@ -36,3 +36,29 @@ float ** utils::readFile(std::string filename) {
 
     return arr;
 }
+
+bool outputToCSV(float ** arr, int size, std::string filename) {
+    using namespace std;
+
+    ofstream file(filename);
+
+    // first cell in first line is blank
+    file << "";
+
+    // add bin numbers
+    for (int col = 0; col < size; ++col)
+        file << "," << col;
+
+    for (int row = 0; row < size; ++row) {
+        // add the row number
+        file << row;
+        // add the value at (row, col)
+        for (int col = 1; col < size; ++ col) {
+            file << "," << arr[row][col];
+        }
+    }
+
+    file.close();
+
+    return true;
+}
