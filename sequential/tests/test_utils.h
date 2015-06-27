@@ -4,6 +4,8 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <vector>
+
 class TestUtils : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(TestUtils);
@@ -12,7 +14,7 @@ class TestUtils : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 
     private:
-        float ** arr;
+        std::vector<std::vector<float>> arr;
 
     public:
         // Memory managemenet stuff
