@@ -32,7 +32,7 @@ std::vector<std::vector<float>> utils::readFile(std::string filename) {
 
     file.close();
 
-    return arr;
+    return move(arr);
 }
 
 bool utils::outputToCSV(std::vector<std::vector<float>> & arr, std::string filename) {
