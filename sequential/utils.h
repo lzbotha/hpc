@@ -1,13 +1,11 @@
 #ifndef _UTILS
 #define _UTILS
 
-#include <vector>
-
 namespace utils {
     int getFileSize(std::string filename);
-    std::vector<std::vector<float>> readFile(std::string filename);
+    float * readFile(std::string filename);
 
-    bool outputToCSV(std::vector<std::vector<float>> & arr, std::string filename);
+    bool outputToCSV(float * arr, int rows, int cols, std::string filename);
 }
 
 #endif

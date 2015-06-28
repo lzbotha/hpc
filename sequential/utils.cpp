@@ -11,7 +11,7 @@ int utils::getFileSize(std::string filename) {
     return file.tellg();
 }
 
-std::vector<std::vector<float>> utils::readFile(std::string filename) {
+float * utils::readFile(std::string filename) {
     using namespace std;
     // TODO: add a check that floats are 32 bits on this architecture
 
@@ -22,8 +22,7 @@ std::vector<std::vector<float>> utils::readFile(std::string filename) {
     // Move back to the start of the file
     file.seekg(ios_base::beg);
 
-
-    float * values = new float [bytes/4];
+    float * arr = new float [bytes/4];
     float fileRead[1024];
     int counter = 0;
 
@@ -31,8 +30,8 @@ std::vector<std::vector<float>> utils::readFile(std::string filename) {
         file.read(reinterpret_cast<char*>(&fileRead), 1024 * sizeof(float));
 
         for (int j = 0; j < 1024; j+=2){
-            values[counter] = fileRead[j];
-            values[counter + 1] = fileRead[j + 1];
+            arr[counter] = fileRead[j];
+            arr[counter + 1] = fileRead[j + 1];
             counter += 2;
         }
     }
@@ -40,11 +39,10 @@ std::vector<std::vector<float>> utils::readFile(std::string filename) {
 
     file.close();
 
-    vector<vector<float>> arr;
-    return move(arr);
+    return arr;
 }
 
-bool utils::outputToCSV(std::vector<std::vector<float>> & arr, std::string filename) {
+bool utils::outputToCSV(float * arr, int rows, int cols, std::string filename) {
     using namespace std;
 
     ofstream file(filename);
@@ -53,16 +51,16 @@ bool utils::outputToCSV(std::vector<std::vector<float>> & arr, std::string filen
     file << "";
 
     // add bin numbers
-    for (int col = 0; col < arr[0].size(); ++col)
+    for (int col = 0; col < cols; ++col)
         file << "," << col;
     file << endl;
 
-    for (int row = 0; row < arr.size(); ++row) {
+    for (int row = 0; row < rows; ++row) {
         // add the row number
         file << row;
         // add the value at (row, col)
-        for (int col = 0; col < arr[0].size(); ++ col) {
-            file << "," << arr[row][col];
+        for (int col = 0; col < cols; ++ col) {
+            file << "," << arr[row * rows + col];
         }
         file << endl;
     }
