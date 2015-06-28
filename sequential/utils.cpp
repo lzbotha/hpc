@@ -19,19 +19,28 @@ std::vector<std::vector<float>> utils::readFile(std::string filename) {
     ifstream file(filename, std::ifstream::ate | std::ios::binary);
     int bytes = file.tellg();
 
-    vector<vector<float>> arr(bytes/8, vector<float>(2, 0));
-
     // Move back to the start of the file
     file.seekg(ios_base::beg);
 
-    for (int i = 0; i < bytes; i+= 8) {
-        // Read in 2 floats from file
-        file.read(reinterpret_cast<char*>(&arr[i/8][0]), sizeof(float));
-        file.read(reinterpret_cast<char*>(&arr[i/8][1]), sizeof(float));
+
+    float * values = new float [bytes/4];
+    float fileRead[1024];
+    int counter = 0;
+
+    for (int i = 0; i < bytes; i += 1024 * sizeof(float)){
+        file.read(reinterpret_cast<char*>(&fileRead), 1024 * sizeof(float));
+
+        for (int j = 0; j < 1024; j+=2){
+            values[counter] = fileRead[j];
+            values[counter + 1] = fileRead[j + 1];
+            counter += 2;
+        }
     }
+    // ./tool  11.50s user 5.90s system 19% cpu 1:28.45 total
 
     file.close();
 
+    vector<vector<float>> arr;
     return move(arr);
 }
 
