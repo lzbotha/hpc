@@ -1,18 +1,20 @@
-#ifndef _UTILS_TEST
-#define _UTILS_TEST
+#ifndef _GRID_TEST
+#define _GRID_TEST
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-class TestUtils : public CppUnit::TestFixture {
+#include "../grid.h"
 
-    CPPUNIT_TEST_SUITE(TestUtils);
-    CPPUNIT_TEST(testFileReading);
+class TestGrid : public CppUnit::TestFixture {
+
+    CPPUNIT_TEST_SUITE(TestGrid);
+    CPPUNIT_TEST(testBasics);
     // CPPUNIT_TEST(testFileWriting);
     CPPUNIT_TEST_SUITE_END();
 
     private:
-        float * arr;
+        Grid * g;
 
     public:
         // Memory managemenet stuff
@@ -20,10 +22,9 @@ class TestUtils : public CppUnit::TestFixture {
         void tearDown();
 
         // Test cases
-        void testFileReading();
-        // void testFileWriting();
+        void testBasics();
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( TestUtils );
+CPPUNIT_TEST_SUITE_REGISTRATION( TestGrid );
 
 #endif

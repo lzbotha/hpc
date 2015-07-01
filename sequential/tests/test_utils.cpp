@@ -42,11 +42,6 @@ void TestUtils::testFileReading() {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.761684f, arr[17], 0.00001);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.345452f, arr[18], 0.00001);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.395687f, arr[19], 0.00001);
-
-
-
-
-    CPPUNIT_ASSERT_EQUAL(1, 1);
 }
 
 // void TestUtils::testFileWriting() {
