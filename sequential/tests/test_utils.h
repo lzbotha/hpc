@@ -10,11 +10,11 @@ class TestUtils : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(TestUtils);
     CPPUNIT_TEST(testFileReading);
-    CPPUNIT_TEST(testFileWriting);
+    // CPPUNIT_TEST(testFileWriting);
     CPPUNIT_TEST_SUITE_END();
 
     private:
-        std::vector<std::vector<float>> arr;
+        float * arr;
 
     public:
         // Memory managemenet stuff
@@ -23,7 +23,7 @@ class TestUtils : public CppUnit::TestFixture {
 
         // Test cases
         void testFileReading();
-        void testFileWriting();
+        // void testFileWriting();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestUtils );

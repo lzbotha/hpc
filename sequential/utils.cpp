@@ -30,42 +30,45 @@ float * utils::readFile(std::string filename) {
         file.read(reinterpret_cast<char*>(&fileRead), 1024 * sizeof(float));
 
         for (int j = 0; j < 1024; j+=2){
+            // Handle all cases where the file is not a multiple of block length
+            if (counter >=bytes/4)
+                break;
+
             arr[counter] = fileRead[j];
             arr[counter + 1] = fileRead[j + 1];
             counter += 2;
         }
     }
-    // ./tool  11.50s user 5.90s system 19% cpu 1:28.45 total
 
     file.close();
 
     return arr;
 }
 
-bool utils::outputToCSV(float * arr, int rows, int cols, std::string filename) {
-    using namespace std;
+// bool utils::outputToCSV(float * arr, int rows, int cols, std::string filename) {
+//     using namespace std;
 
-    ofstream file(filename);
+//     ofstream file(filename);
 
-    // first cell in first line is blank
-    file << "";
+//     // first cell in first line is blank
+//     file << "";
 
-    // add bin numbers
-    for (int col = 0; col < cols; ++col)
-        file << "," << col;
-    file << endl;
+//     // add bin numbers
+//     for (int col = 0; col < cols; ++col)
+//         file << "," << col;
+//     file << endl;
 
-    for (int row = 0; row < rows; ++row) {
-        // add the row number
-        file << row;
-        // add the value at (row, col)
-        for (int col = 0; col < cols; ++ col) {
-            file << "," << arr[row * rows + col];
-        }
-        file << endl;
-    }
+//     for (int row = 0; row < rows; ++row) {
+//         // add the row number
+//         file << row;
+//         // add the value at (row, col)
+//         for (int col = 0; col < cols; ++ col) {
+//             file << "," << arr[row * rows + col];
+//         }
+//         file << endl;
+//     }
 
-    file.close();
+//     file.close();
 
-    return true;
-}
+//     return true;
+// }
