@@ -10,7 +10,6 @@ class TestGrid : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(TestGrid);
     CPPUNIT_TEST(testBasics);
-    // CPPUNIT_TEST(testFileWriting);
     CPPUNIT_TEST_SUITE_END();
 
     private:

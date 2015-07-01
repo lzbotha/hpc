@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 
+#include "grid.h"
 #include "utils.h"
 
 int main(int argc, char *argv[]) {
