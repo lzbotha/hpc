@@ -95,3 +95,41 @@ void TestGrid::testPopulatingFromFile() {
     CPPUNIT_ASSERT_EQUAL(1, (*g)(7, 6));
     CPPUNIT_ASSERT_EQUAL(1, (*g)(9, 5));
 }
+
+void TestGrid::testMedianFilter() {
+    g->clear();
+    // Top row
+    (*g)(0,0) = 1;
+    (*g)(0,1) = 0;
+    (*g)(0,2) = 0;
+
+    // Middle row
+    (*g)(1,0) = 1;
+    (*g)(1,1) = 1;
+    (*g)(1,2) = 1;
+
+    // Bottom row
+    (*g)(2,0) = 0;
+    (*g)(2,1) = 0;
+    (*g)(2,2) = 1;
+
+    CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(1, 1, 3));
+
+
+    // Top row
+    (*g)(0,0) = 0;
+    (*g)(0,1) = 1;
+    (*g)(0,2) = 2;
+
+    // Middle row
+    (*g)(1,0) = 3;
+    (*g)(1,1) = 4;
+    (*g)(1,2) = 5;
+
+    // Bottom row
+    (*g)(2,0) = 6;
+    (*g)(2,1) = 7;
+    (*g)(2,2) = 8;
+
+    CPPUNIT_ASSERT_EQUAL(4, g->medianFilter(1, 1, 3));
+}

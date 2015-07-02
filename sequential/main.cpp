@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
     // for (int i = 0; i < 10; ++i)
     //     cout << arr[i][0] << "\t" << arr[i][1] << endl;
 
-    Grid g(20, 20);
+    Grid g(4096, 4096);
     g.populateFromFile("../data/Points_[2.0e+08]_Noise_[030]_Normal.bin");
-    g.print();
+    // g.print();
     return 0;
 }

@@ -21,6 +21,8 @@ class Grid {
         void getRows(int centre, int radius, int & start, int & end);
 
         void populateFromFile(std::string filename);
+
+        int medianFilter(int row, int col, int diameter);
 };
 
 #endif

@@ -1,5 +1,8 @@
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <algorithm>
+
 #include "grid.h"
 #include "utils.h"
 
@@ -75,4 +78,24 @@ void Grid::populateFromFile(std::string filename) {
     }
 
     delete values;
+}
+
+int Grid::medianFilter(int row, int col, int diameter) {
+    using namespace std;
+
+    vector<int> values;
+    int top = (row - 1)/2;
+    int left = (col -1)/2;
+
+    for (int r = 0; r < diameter; ++r) {
+        for (int c = 0; c < diameter; ++c) {
+            values.emplace_back((*this)(top + r, left + c));
+        }
+    }
+
+    int middle = (values.size() - 1) / 2;
+
+    nth_element(values.begin(), values.begin()+middle, values.end());
+
+    return values[middle];
 }

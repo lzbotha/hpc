@@ -13,6 +13,7 @@ class TestGrid : public CppUnit::TestFixture {
     CPPUNIT_TEST(testIndexing);
     CPPUNIT_TEST(testRowFetching);
     CPPUNIT_TEST(testPopulatingFromFile);
+    CPPUNIT_TEST(testMedianFilter);
     CPPUNIT_TEST_SUITE_END();
 
     private:
@@ -28,6 +29,7 @@ class TestGrid : public CppUnit::TestFixture {
         void testIndexing();
         void testRowFetching();
         void testPopulatingFromFile();
+        void testMedianFilter();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestGrid );
