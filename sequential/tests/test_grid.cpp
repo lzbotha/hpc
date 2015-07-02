@@ -15,14 +15,23 @@ void TestGrid::testBasics() {
     using namespace std;
     CPPUNIT_ASSERT_EQUAL(10, g->rows());
     CPPUNIT_ASSERT_EQUAL(10, g->cols());
+}
 
+void TestGrid::testIndexing() {
     for (int i = 0; i < 100; ++i)
         (*g)[i] = i;
 
     for (int i = 0; i < 100; ++i)
         CPPUNIT_ASSERT_EQUAL(i, (*g)[i]);
 
+    for (int i = 0; i < 10; ++i)
+        (*g)(i, i) = i;
 
+    for (int i = 0; i < 10; ++i)
+        CPPUNIT_ASSERT_EQUAL(i, (*g)(i, i));
+}
+
+void TestGrid::testRowFetching() {
     int start = -1;
     int end = -1;
     g->getRows(5, 3, start, end);

@@ -10,6 +10,8 @@ class TestGrid : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(TestGrid);
     CPPUNIT_TEST(testBasics);
+    CPPUNIT_TEST(testIndexing);
+    CPPUNIT_TEST(testRowFetching);
     CPPUNIT_TEST_SUITE_END();
 
     private:
@@ -22,6 +24,8 @@ class TestGrid : public CppUnit::TestFixture {
 
         // Test cases
         void testBasics();
+        void testIndexing();
+        void testRowFetching();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TestGrid );
