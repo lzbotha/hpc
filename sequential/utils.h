@@ -7,6 +7,7 @@ namespace utils {
     */
     int getFileSize(std::string filename);
     float * readFile(std::string filename);
+    int clamp(int n, int lower, int upper);
 
     // bool outputToCSV(float * arr, int rows, int cols, std::string filename);
 }

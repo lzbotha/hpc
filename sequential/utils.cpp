@@ -72,3 +72,7 @@ float * utils::readFile(std::string filename) {
 
 //     return true;
 // }
+
+int utils::clamp(int n, int lower, int upper) {
+    return (int)std::max(lower, std::min(n, upper));
+}

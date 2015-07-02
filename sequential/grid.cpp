@@ -82,18 +82,28 @@ void Grid::populateFromFile(std::string filename) {
 
 int Grid::medianFilter(int row, int col, int diameter) {
     using namespace std;
-
     vector<int> values;
-    int top = (row - 1)/2;
-    int left = (col -1)/2;
 
-    for (int r = 0; r < diameter; ++r) {
-        for (int c = 0; c < diameter; ++c) {
+
+
+    int top = utils::clamp((row - 1)/2, 0, this->r - 1);
+    int bottom = utils::clamp(row + (diameter - 1) / 2, 0, this->r - 1);
+    int left = utils::clamp((col -1)/2, 0, this->c - 1);
+    int right = utils::clamp(col + (diameter - 1) / 2, 0, this->c - 1);
+
+    // cout << "top: " << top << endl;
+    // cout << "bottom: " << bottom << endl;
+    // cout << "left: " << left << endl;
+    // cout << "right: " << right << endl;
+
+    for (int r = top; r <= bottom; ++r) {
+        for (int c = left; c <= right; ++c) {
             values.emplace_back((*this)(top + r, left + c));
         }
     }
 
     int middle = (values.size() - 1) / 2;
+    // cout << middle << endl;
 
     nth_element(values.begin(), values.begin()+middle, values.end());
 

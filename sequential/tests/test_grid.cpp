@@ -132,4 +132,29 @@ void TestGrid::testMedianFilter() {
     (*g)(2,2) = 8;
 
     CPPUNIT_ASSERT_EQUAL(4, g->medianFilter(1, 1, 3));
+
+    g->clear();
+    
+    // Top row
+    (*g)(0,0) = 0;
+    (*g)(0,1) = 1;
+
+    // Middle row
+    (*g)(1,0) = 1;
+    (*g)(1,1) = 1;
+
+    CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(0, 0, 3));
+
+    // Top row
+    (*g)(0,0) = 0;
+    (*g)(0,1) = 1;
+
+    // Middle row
+    (*g)(1,0) = 2;
+    (*g)(1,1) = 3;    
+
+    CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(0, 0, 3));
+
+    // TODO: add tests for the other corners
+    // TODO: add a test case where diameter is larger than rows and cols
 }
