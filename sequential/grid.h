@@ -16,6 +16,7 @@ class Grid {
         inline int& operator() (int y, int x) {return grid[x + r * y];}
 
         void clear();
+        void print();
 
         void getRows(int centre, int radius, int & start, int & end);
 

@@ -20,6 +20,16 @@ void Grid::clear() {
         grid[i] = 0;
 }
 
+void Grid::print() {
+    using namespace std;
+    for (int row = 0; row < this->r; ++row){
+        for (int col = 0; col < this->c; ++col) {
+            cout << (*this)(row, col) << "\t";
+        }
+        cout << endl;
+    }
+}
+
 void Grid::getRows(
     int centre, 
     int radius, 
