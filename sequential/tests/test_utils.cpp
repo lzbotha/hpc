@@ -5,7 +5,7 @@
 
 void TestUtils::setUp() {
     using namespace std;
-    arr = utils::readFile("../../data/Points_[1.0e+01]_Noise_[030]_Normal.bin");
+    arr = utils::readFile("Points_[1.0e+01]_Noise_[030]_Normal.bin");
 }
 
 void TestUtils::tearDown() {
@@ -17,7 +17,7 @@ void TestUtils::testFileReading() {
 
     // Test for getting a file size
     CPPUNIT_ASSERT_EQUAL(
-        utils::getFileSize("../../data/Points_[1.0e+01]_Noise_[030]_Normal.bin"),
+        utils::getFileSize("Points_[1.0e+01]_Noise_[030]_Normal.bin"),
         10 * 8
     );
 

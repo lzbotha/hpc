@@ -13,9 +13,13 @@ class Grid {
         int rows();
         int cols();
         inline int& operator[] (int x) {return grid[x];}
-        inline int& operator() (int x, int y) {return grid[x + r * y];}
+        inline int& operator() (int y, int x) {return grid[x + r * y];}
+
+        void clear();
 
         void getRows(int centre, int radius, int & start, int & end);
+
+        void populateFromFile(std::string filename);
 };
 
 #endif

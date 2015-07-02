@@ -2,6 +2,9 @@
 #define _UTILS
 
 namespace utils {
+    /**
+    * Reads in the filesize in bytes
+    */
     int getFileSize(std::string filename);
     float * readFile(std::string filename);
 
