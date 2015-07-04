@@ -109,3 +109,8 @@ int Grid::medianFilter(int row, int col, int diameter) {
 
     return values[middle];
 }
+
+void Grid::printToFile(std::string filename) {
+    using namespace std;
+    utils::outputToCSV(this->grid, this->r, this->c, filename);
+}
