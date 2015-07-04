@@ -6,6 +6,10 @@
 void TestUtils::setUp() {
     using namespace std;
     arr = utils::readFile("Points_[1.0e+01]_Noise_[030]_Normal.bin");
+
+    grid = new int[100];
+    for (int i = 0; i < 100; ++i)
+        grid[i] = i;
 }
 
 void TestUtils::tearDown() {
@@ -44,11 +48,11 @@ void TestUtils::testFileReading() {
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.395687f, arr[19], 0.00001);
 }
 
-// void TestUtils::testFileWriting() {
-//     using namespace std;
-//     // Test for writing a 2D array to a file
+void TestUtils::testFileWriting() {
+    using namespace std;
+    // Test for writing a 2D array to a file
 
-//     utils::outputToCSV(arr, "test.csv");
+    utils::outputToCSV(grid, 10, 10, "test.csv");
 
-//     CPPUNIT_ASSERT_EQUAL(1, 1);
-// }
+    CPPUNIT_ASSERT_EQUAL(1, 1);
+}
