@@ -9,7 +9,7 @@ namespace utils {
     float * readFile(std::string filename);
     int clamp(int n, int lower, int upper);
 
-    // bool outputToCSV(float * arr, int rows, int cols, std::string filename);
+    void outputToCSV(int * arr, int rows, int cols, std::string filename);
 }
 
 #endif

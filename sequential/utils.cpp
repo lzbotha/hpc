@@ -45,33 +45,35 @@ float * utils::readFile(std::string filename) {
     return arr;
 }
 
-// bool utils::outputToCSV(float * arr, int rows, int cols, std::string filename) {
-//     using namespace std;
+void utils::outputToCSV(int * arr, int rows, int cols, std::string filename) {
+    using namespace std;
 
-//     ofstream file(filename);
+    // Calculate the bin widths to print row and column labels
+    float row_bin_width = 1.0f / rows;
+    float col_bin_width = 1.0f / rows;
 
-//     // first cell in first line is blank
-//     file << "";
+    ofstream file(filename);
 
-//     // add bin numbers
-//     for (int col = 0; col < cols; ++col)
-//         file << "," << col;
-//     file << endl;
+    // first cell in first line is blank
+    file << "";
 
-//     for (int row = 0; row < rows; ++row) {
-//         // add the row number
-//         file << row;
-//         // add the value at (row, col)
-//         for (int col = 0; col < cols; ++ col) {
-//             file << "," << arr[row * rows + col];
-//         }
-//         file << endl;
-//     }
+    // add bin numbers
+    for (int col = 0; col < cols; ++col)
+        file << "," << (col * col_bin_width + col_bin_width * 0.5f);
+    file << endl;
 
-//     file.close();
+    for (int row = 0; row < rows; ++row) {
+        // add the row number
+        file << (row * row_bin_width + row_bin_width * 0.5f);
+        // add the value at (row, col)
+        for (int col = 0; col < cols; ++ col) {
+            file << "," << arr[row * rows + col];
+        }
+        file << endl;
+    }
 
-//     return true;
-// }
+    file.close();
+}
 
 int utils::clamp(int n, int lower, int upper) {
     return (int)std::max(lower, std::min(n, upper));
