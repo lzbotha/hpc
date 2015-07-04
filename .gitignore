@@ -10,6 +10,9 @@ tool
 tests/.depend
 sequential/tests/tests
 
+Histogram_Bins*.png
+sequential/tests/test.csv
+
 # Compiled Object files
 *.slo
 *.lo
