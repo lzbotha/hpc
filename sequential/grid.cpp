@@ -111,6 +111,19 @@ int Grid::medianFilter(int row, int col, int diameter) {
     return values[middle];
 }
 
+void Grid::applyMedianFilter(int diameter) {
+    using namespace std;
+
+    int * new_grid = new int[this->r * this->c];
+
+    for (int row = 0; row < this->r; ++row)
+        for (int col = 0; col < this->c; ++col)
+            new_grid[row * this->r + col] = this->medianFilter(row, col, diameter);
+
+    delete [] grid;
+    grid = new_grid;    
+}
+
 void Grid::printToFile(std::string filename) {
     using namespace std;
     utils::outputToCSV(this->grid, this->r, this->c, filename);

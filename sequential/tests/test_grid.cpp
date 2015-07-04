@@ -240,6 +240,34 @@ void TestGrid::testMedianFilter() {
     (*g)(9,1) = 8;    
 
     CPPUNIT_ASSERT_EQUAL(6, g->medianFilter(9, 0, 3));
+
+
+    /**
+        Test applying the median filter to an entire grid that needs no filter
+    */
+    g->clear();
+    for (int i = 0; i < 100; ++i)
+        (*g)[i] = 1;
+
+    g->applyMedianFilter(3);
+
+    for (int i = 0; i < 100; ++i)
+        CPPUNIT_ASSERT_EQUAL(1, (*g)[i]);
+
+    /**
+        Test applying the median filter to an entire grid
+    */
+    for (int row = 0; row < 10; ++row)
+        for (int col = 0; col < 10; ++col)
+            if (row % 2 == 0 and col % 2 == 0)
+                (*g)(row, col) = 5;
+            else
+                (*g)(row, col) = 1;
+
+    g->applyMedianFilter(3);
+
+    for (int i = 0; i < 100; ++i)
+        CPPUNIT_ASSERT_EQUAL(1, (*g)[i]);
 }
 
 void TestGrid::testFileOutput() {

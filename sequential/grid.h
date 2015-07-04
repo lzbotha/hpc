@@ -23,6 +23,7 @@ class Grid {
         void populateFromFile(std::string filename);
 
         int medianFilter(int row, int col, int diameter);
+        void applyMedianFilter(int diameter);
         void printToFile(std::string filename);
 };
 
