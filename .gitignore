@@ -15,6 +15,8 @@ sequential/tests/test.csv
 sequential/tests/utils_output.csv
 sequential/tests/grid_output.csv
 
+sequential/Bins*.csv
+
 # Compiled Object files
 *.slo
 *.lo
