@@ -86,9 +86,9 @@ int Grid::medianFilter(int row, int col, int diameter) {
 
 
 
-    int top = utils::clamp((row - 1)/2, 0, this->r - 1);
+    int top = utils::clamp(row - (diameter - 1) / 2, 0, this->r - 1);
     int bottom = utils::clamp(row + (diameter - 1) / 2, 0, this->r - 1);
-    int left = utils::clamp((col -1)/2, 0, this->c - 1);
+    int left = utils::clamp(col - (diameter - 1) / 2, 0, this->c - 1);
     int right = utils::clamp(col + (diameter - 1) / 2, 0, this->c - 1);
 
     // cout << "top: " << top << endl;
@@ -98,9 +98,10 @@ int Grid::medianFilter(int row, int col, int diameter) {
 
     for (int r = top; r <= bottom; ++r) {
         for (int c = left; c <= right; ++c) {
-            values.emplace_back((*this)(top + r, left + c));
+            values.emplace_back((*this)(r, c));
         }
     }
+    // cout << values.size() << endl;
 
     int middle = (values.size() - 1) / 2;
     // cout << middle << endl;

@@ -97,6 +97,10 @@ void TestGrid::testPopulatingFromFile() {
 }
 
 void TestGrid::testMedianFilter() {
+    /**
+        Tests a median filter in the top left where most of the elements are
+        set to be 1.
+    */
     g->clear();
     // Top row
     (*g)(0,0) = 1;
@@ -116,6 +120,9 @@ void TestGrid::testMedianFilter() {
     CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(1, 1, 3));
 
 
+    /**
+        Tests a median filter in the top left where the elements are in [0, 8]
+    */
     // Top row
     (*g)(0,0) = 0;
     (*g)(0,1) = 1;
@@ -133,6 +140,9 @@ void TestGrid::testMedianFilter() {
 
     CPPUNIT_ASSERT_EQUAL(4, g->medianFilter(1, 1, 3));
 
+    /**
+        Tests a median filter in the top left corner where some elements are cur off
+    */
     g->clear();
     
     // Top row
@@ -146,22 +156,90 @@ void TestGrid::testMedianFilter() {
     CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(0, 0, 3));
 
     // Top row
-    (*g)(0,0) = 0;
-    (*g)(0,1) = 1;
+    (*g)(0,0) = 1;
+    (*g)(0,1) = 2;
 
     // Middle row
-    (*g)(1,0) = 2;
-    (*g)(1,1) = 3;    
+    (*g)(1,0) = 3;
+    (*g)(1,1) = 4;    
 
-    CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(0, 0, 3));
+    CPPUNIT_ASSERT_EQUAL(2, g->medianFilter(0, 0, 3));
 
-    // TODO: add tests for the other corners
-    // CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(1, 8, 3));
+    /**
+        Tests a median filter in the top right corner where some elements are cur off
+    */
+    g->clear();
     
-    // CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(8, 0, 3));
-    // CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(8, 8, 3));
+    // Top row
+    (*g)(0,8) = 0;
+    (*g)(0,9) = 3;
 
-    // TODO: add a test case where diameter is larger than rows and cols
+    // Middle row
+    (*g)(1,8) = 3;
+    (*g)(1,9) = 3;
+
+    CPPUNIT_ASSERT_EQUAL(3, g->medianFilter(0, 9, 3));
+
+    // Top row
+    (*g)(0,8) = 5;
+    (*g)(0,9) = 6;
+
+    // Middle row
+    (*g)(1,8) = 7;
+    (*g)(1,9) = 8;    
+
+    CPPUNIT_ASSERT_EQUAL(6, g->medianFilter(0, 9, 3));
+
+
+    /**
+        Tests a median filter in the bottom right corner where some elements are cur off
+    */
+    g->clear();
+    
+    // Top row
+    (*g)(8,8) = 0;
+    (*g)(8,9) = 4;
+
+    // Middle row
+    (*g)(9,8) = 4;
+    (*g)(9,9) = 4;
+
+    CPPUNIT_ASSERT_EQUAL(4, g->medianFilter(9, 9, 3));
+
+    // Top row
+    (*g)(8,8) = 5;
+    (*g)(8,9) = 6;
+
+    // Middle row
+    (*g)(9,8) = 7;
+    (*g)(9,9) = 8;    
+
+    CPPUNIT_ASSERT_EQUAL(6, g->medianFilter(9, 9, 3));
+
+    /**
+        Tests a median filter in the bottom left corner where some elements are cur off
+    */
+    g->clear();
+    
+    // Top row
+    (*g)(8,0) = 0;
+    (*g)(8,1) = 4;
+
+    // Middle row
+    (*g)(9,0) = 4;
+    (*g)(9,1) = 4;
+
+    CPPUNIT_ASSERT_EQUAL(4, g->medianFilter(9, 0, 3));
+
+    // Top row
+    (*g)(8,0) = 5;
+    (*g)(8,1) = 6;
+
+    // Middle row
+    (*g)(9,0) = 7;
+    (*g)(9,1) = 8;    
+
+    CPPUNIT_ASSERT_EQUAL(6, g->medianFilter(9, 0, 3));
 }
 
 void TestGrid::testFileOutput() {
