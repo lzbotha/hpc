@@ -156,5 +156,19 @@ void TestGrid::testMedianFilter() {
     CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(0, 0, 3));
 
     // TODO: add tests for the other corners
+    // CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(1, 8, 3));
+    
+    // CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(8, 0, 3));
+    // CPPUNIT_ASSERT_EQUAL(1, g->medianFilter(8, 8, 3));
+
     // TODO: add a test case where diameter is larger than rows and cols
+}
+
+void TestGrid::testFileOutput() {
+    g->clear();
+    for (int row = 0; row < 10; ++row)
+        for (int col = 0; col < 10; ++col)
+            (*g)(row, col) = 10 * row + col;
+
+    g->printToFile("grid_output.csv");
 }

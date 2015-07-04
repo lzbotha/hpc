@@ -52,7 +52,7 @@ void TestUtils::testFileWriting() {
     using namespace std;
     // Test for writing a 2D array to a file
 
-    utils::outputToCSV(grid, 10, 10, "test.csv");
+    utils::outputToCSV(grid, 10, 10, "utils_output.csv");
 
     CPPUNIT_ASSERT_EQUAL(1, 1);
 }

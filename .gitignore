@@ -13,6 +13,7 @@ sequential/tests/tests
 Histogram_Bins*.png
 sequential/tests/test.csv
 sequential/tests/utils_output.csv
+sequential/tests/grid_output.csv
 
 # Compiled Object files
 *.slo
