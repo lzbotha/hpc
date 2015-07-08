@@ -76,6 +76,29 @@ void Grid::populateFromFile(std::string filename) {
     delete values;
 }
 
+void Grid::populateFromArray(int points, float * values) {
+    using namespace std;
+
+    float bucket_row_width = 1.0f / this->r;
+    float bucket_col_width = 1.0f / this->c;
+
+    for (int p = 0; p < points; ++p){
+        float x = values[2 * p];
+        float y = values[2 * p + 1];
+
+        int bucket_row = (int)(x / bucket_row_width);
+        if (bucket_row >= this->r)
+            bucket_row = this->r - 1;
+
+        int bucket_col = (int)(y / bucket_col_width);
+        if (y >= this->c)
+            bucket_col = this->c - 1;
+
+        ++this->grid[bucket_col + bucket_row * this->r];
+    }
+}
+
+
 // int Grid::medianFilter(int row, int col, int diameter) {
 //     using namespace std;
 //     vector<int> values;

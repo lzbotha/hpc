@@ -8,23 +8,42 @@
 int main(int argc, char *argv[]) {
     using namespace std;
 
-    clock_t start;
+    if (argc != 5) {
+        cerr << "Incorrect usage" << endl;
+        exit(0);
+    }
+
+    string input_file = argv[1];
+    string output_file = argv[2];
+    int grid_dim = atoi(argv[3]);
+    int filter_dim = atoi(argv[4]);
+
+    clock_t start, total;
+    start = clock();
+    total = clock();
+
+    Grid g(grid_dim, grid_dim);
+    cout << "Creating grid object: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
     start = std::clock();
 
-    Grid g(4096, 4096);
-    cout << "Creating grid object: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << endl;
+    int points = utils::getFileSize(input_file) / sizeof(float) / 2;
+    float * values = utils::readFile(input_file);
+    cout << "Reading file from disk: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
     start = std::clock();
 
-    g.populateFromFile("../data/Points_[2.0e+08]_Noise_[030]_Normal.bin");
-    cout << "Reading file into grid: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << endl;
+    g.populateFromArray(points, values);
+    cout << "Populating grid: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
     start = std::clock();
 
-    g.applyMedianFilter(3);
-    cout << "Applying median filter: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << endl;
+    g.applyMedianFilter(filter_dim);
+    cout << "Applying median filter: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
     start = std::clock();
-    
-    g.printToFile("Bins_[2.0e+08].csv");
-    cout << "Printing to file: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << endl;
-    // g.print();
+
+    g.printToFile(output_file);
+    cout << "Printing to file: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
+
+    cout << "Total: " << (clock() - total) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
+
+    delete[] values;
     return 0;
 }
