@@ -7,14 +7,13 @@ Histogram_Bins_0005__v000.png
 data
 tool
 .depend
-tests/.depend
 sequential/tests/tests
 output.csv
 
 Histogram_Bins*.png
-sequential/tests/test.csv
-sequential/tests/utils_output.csv
-sequential/tests/grid_output.csv
+test.csv
+utils_output.csv
+grid_output.csv
 
 sequential/Bins*.csv
 
