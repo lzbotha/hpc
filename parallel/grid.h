@@ -7,6 +7,10 @@ class Grid {
         int r;
         int c;
 
+        int partition(int* input, int p, int r);
+        int quick_select(int* input, int p, int r, int k);
+
+
     public:
         Grid(int rows, int cols);
         ~Grid();
