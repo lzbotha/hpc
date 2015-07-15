@@ -36,21 +36,6 @@ void Grid::print() {
     }
 }
 
-void Grid::getRows(
-    int centre, 
-    int radius, 
-    int & start, 
-    int & end) 
-{
-    start = (centre - radius)<0 ? 0:(centre - radius);
-    end = (centre + radius)>this->r ? this->r - 1: (centre + radius);
-
-    if (centre > this->r || centre < 0) {
-        start = -1;
-        end = -1;
-    }
-}
-
 void Grid::populateFromFile(std::string filename) {
     using namespace std;
 
@@ -162,10 +147,8 @@ int Grid::medianFilter(int row, int col, int diameter) {
     int middle = (num_values - 1) / 2;
     // cout << middle << endl;
 
-    // nth_element(values, values + middle, values + num_values);
-    // return values[middle];
-
-    return quick_select(values, 0, num_values - 1, middle + 1);
+    nth_element(values, values + middle, values + num_values);
+    return values[middle];
 }
 
 void Grid::applyMedianFilter(int diameter) {
@@ -184,42 +167,4 @@ void Grid::applyMedianFilter(int diameter) {
 void Grid::printToFile(std::string filename) {
     using namespace std;
     utils::outputToCSV(this->grid, this->r, this->c, filename);
-}
-
-
-// borrowed from http://www.sourcetricks.com/2011/06/quick-select.html#.VaUFmnP6xhE
-int Grid::partition(int* input, int p, int r)
-{
-    int pivot = input[r];
-    
-    while ( p < r )
-    {
-        while ( input[p] < pivot )
-            p++;
-        
-        while ( input[r] > pivot )
-            r--;
-        
-        if ( input[p] == input[r] )
-            p++;
-        else if ( p < r ) {
-            int tmp = input[p];
-            input[p] = input[r];
-            input[r] = tmp;
-        }
-    }
-    
-    return r;
-}
-
-// borrowed from http://www.sourcetricks.com/2011/06/quick-select.html#.VaUFmnP6xhE
-// input array begin end element
-int Grid::quick_select(int* input, int p, int r, int k)
-{
-    if ( p == r ) return input[p];
-    int j = partition(input, p, r);
-    int length = j - p + 1;
-    if ( length == k ) return input[j];
-    else if ( k < length ) return quick_select(input, p, j - 1, k);
-    else  return quick_select(input, j + 1, r, k - length);
 }

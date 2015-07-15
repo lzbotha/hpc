@@ -13,7 +13,7 @@ Grid::Grid(int rows, int cols) : r(rows), c(cols){
 }
 
 Grid::~Grid() {
-    delete this->grid;
+    delete[] this->grid;
 }
 
 int Grid::rows() {return this->r;}
