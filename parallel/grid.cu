@@ -86,36 +86,6 @@ void Grid::populateFromArray(int points, float * values) {
 }
 
 
-// int Grid::medianFilter(int row, int col, int diameter) {
-//     using namespace std;
-//     vector<int> values;
-
-//     int top = utils::clamp(row - (diameter - 1) / 2, 0, this->r - 1);
-//     int bottom = utils::clamp(row + (diameter - 1) / 2, 0, this->r - 1);
-//     int left = utils::clamp(col - (diameter - 1) / 2, 0, this->c - 1);
-//     int right = utils::clamp(col + (diameter - 1) / 2, 0, this->c - 1);
-
-//     // cout << "top: " << top << endl;
-//     // cout << "bottom: " << bottom << endl;
-//     // cout << "left: " << left << endl;
-//     // cout << "right: " << right << endl;
-
-//     for (int r = top; r <= bottom; ++r) {
-//         for (int c = left; c <= right; ++c) {
-//             values.emplace_back((*this)(r, c));
-//         }
-//     }
-//     // cout << values.size() << endl;
-//     // myvector.insert (it+2,anothervector.begin(),anothervector.end());
-
-//     int middle = (values.size() - 1) / 2;
-//     // cout << middle << endl;
-
-//     nth_element(values.begin(), values.begin()+middle, values.end());
-
-//     return values[middle];
-// }
-
 int Grid::medianFilter(int row, int col, int diameter) {
     using namespace std;
 
@@ -127,13 +97,6 @@ int Grid::medianFilter(int row, int col, int diameter) {
     int num_values = (bottom - top + 1) * (right - left + 1);
     int values[num_values];
     int count = 0;
-
-    // for (int r = top; r <= bottom; ++r) {
-    //     for (int c = left; c <= right; ++c) {
-    //         values[count] = (*this)(r, c);
-    //         ++count;
-    //     }
-    // }
 
     for (int r = top; r <= bottom; ++r) {
         copy(
@@ -167,4 +130,18 @@ void Grid::applyMedianFilter(int diameter) {
 void Grid::printToFile(std::string filename) {
     using namespace std;
     utils::outputToCSV(this->grid, this->r, this->c, filename);
+}
+
+int Grid::select_kth(int * list, int left, int right, int k) {
+    return -1;
+}
+
+inline int Grid::partition(int * list, int left, int right, int pivot_index) {
+    int pivot_value = list[pivot_index];
+
+    // Move pivot to the end
+    list[pivot_index] = list[right];
+    list[right] = pivot_value;
+
+    return -1;
 }

@@ -45,32 +45,6 @@ void TestGrid::testIndexing() {
     CPPUNIT_ASSERT_EQUAL(33, (*g)(3, 3));
 }
 
-void TestGrid::testRowFetching() {
-    g->clear();
-
-    int start = -1;
-    int end = -1;
-    g->getRows(5, 3, start, end);
-    CPPUNIT_ASSERT_EQUAL(2, start);
-    CPPUNIT_ASSERT_EQUAL(8, end);
-
-    g->getRows(0, 3, start, end);
-    CPPUNIT_ASSERT_EQUAL(0, start);
-    CPPUNIT_ASSERT_EQUAL(3, end);    
-
-    g->getRows(9, 3, start, end);
-    CPPUNIT_ASSERT_EQUAL(6, start);
-    CPPUNIT_ASSERT_EQUAL(9, end);
-
-    g->getRows(12, 3, start, end);
-    CPPUNIT_ASSERT_EQUAL(-1, start);
-    CPPUNIT_ASSERT_EQUAL(-1, end);
-
-    g->getRows(5, 20, start, end);
-    CPPUNIT_ASSERT_EQUAL(0, start);
-    CPPUNIT_ASSERT_EQUAL(9, end);
-}
-
 void TestGrid::testPopulatingFromFile() {
     using namespace std;
     g->clear();
