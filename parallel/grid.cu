@@ -155,7 +155,6 @@ int Grid::select_kth(int * list, int left, int right, int k) {
 inline int Grid::partition(int * list, int left, int right, int pivot_index) {
     int pivot_value = list[pivot_index];
 
-
     // Move pivot to the end
     list[pivot_index] = list[right];
     list[right] = pivot_value;

@@ -9,6 +9,7 @@ tool
 .depend
 sequential/tests/tests
 output.csv
+test
 
 Histogram_Bins*.png
 test.csv

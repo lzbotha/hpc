@@ -242,6 +242,22 @@ void TestGrid::testMedianFilter() {
 
     for (int i = 0; i < 100; ++i)
         CPPUNIT_ASSERT_EQUAL(1, (*g)[i]);
+
+
+    int arr[] = {9,8,7,6,5,4,3,2,1,0};
+    g->select_kth(arr, 0, 9, 9);
+    g->select_kth(arr, 0, 9, 8);
+    g->select_kth(arr, 0, 9, 7);
+    g->select_kth(arr, 0, 9, 6);
+    g->select_kth(arr, 0, 9, 5);
+    g->select_kth(arr, 0, 9, 4);
+    g->select_kth(arr, 0, 9, 3);
+    g->select_kth(arr, 0, 9, 2);
+    g->select_kth(arr, 0, 9, 1);
+    g->select_kth(arr, 0, 9, 0);
+
+    for (int i = 0; i < 10; ++i)
+        CPPUNIT_ASSERT_EQUAL(i, arr[i]);
 }
 
 void TestGrid::testFileOutput() {
