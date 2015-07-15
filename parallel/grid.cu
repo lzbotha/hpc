@@ -133,72 +133,97 @@ __device__ int clamp(int x, int a, int b) {
     return max(a, min(b, x));
 }
 
-__global__ void filter(int * grid, int rows, int cols, int diameter) {
-    int row = 0;
-    int col = 0;
+__global__ void filter(int * grid, int * result, int rows, int cols, int diameter) {
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+    int col = blockIdx.y * blockDim.y + threadIdx.y;
 
-    int top = clamp(row - (diameter - 1) / 2, 0, rows - 1);
-    int bottom = clamp(row + (diameter - 1) / 2, 0, rows - 1);
-    int left = clamp(col - (diameter - 1) / 2, 0, cols - 1);
-    int right = clamp(col + (diameter - 1) / 2, 0, cols - 1);
+    if(row < rows and col < cols){
+        // int top = clamp(row - (diameter - 1) / 2, 0, rows - 1);
+        // int bottom = clamp(row + (diameter - 1) / 2, 0, rows - 1);
+        // int left = clamp(col - (diameter - 1) / 2, 0, cols - 1);
+        // int right = clamp(col + (diameter - 1) / 2, 0, cols - 1);
 
-    int num_values = (bottom - top + 1) * (right - left + 1);
-    int values[441];
-    int padding = 441 - diameter * diameter;
+        // int num_values = (bottom - top + 1) * (right - left + 1);
+        // int values[441];
+        // int padding = 441 - diameter * diameter;
 
-    for (int i = 0; i < padding; ++i)
-        values[i] = -1;
+        // for (int i = 0; i < padding; ++i)
+        //     values[i] = -1;
 
-    int count = padding;
+        // int count = padding;
 
-    for (int r = top; r <= bottom; ++r) {
-        for (int c = left; c <= right; ++c) {
-            values[count] = grid[c + r * cols];
-            ++count;
-        }
+        // for (int r = top; r <= bottom; ++r) {
+        //     for (int c = left; c <= right; ++c) {
+        //         values[count] = grid[c + r * cols];
+        //         ++count;
+        //     }
+        // }
+
+        // result[col + row * cols] = select_kth(values, 0, num_values - 1, padding + (num_values - 1) / 2 - 1);
+        result[col + row * cols] = -1;
     }
-
-    int ans = select_kth(values, 0, num_values - 1, padding + (num_values - 1) / 2 - 1);
 }
 
 
-int Grid::medianFilter(int row, int col, int diameter) {
-    using namespace std;
+// int Grid::medianFilter(int row, int col, int diameter) {
+//     using namespace std;
 
-    int top = utils::clamp(row - (diameter - 1) / 2, 0, this->r - 1);
-    int bottom = utils::clamp(row + (diameter - 1) / 2, 0, this->r - 1);
-    int left = utils::clamp(col - (diameter - 1) / 2, 0, this->c - 1);
-    int right = utils::clamp(col + (diameter - 1) / 2, 0, this->c - 1);
+//     int top = utils::clamp(row - (diameter - 1) / 2, 0, this->r - 1);
+//     int bottom = utils::clamp(row + (diameter - 1) / 2, 0, this->r - 1);
+//     int left = utils::clamp(col - (diameter - 1) / 2, 0, this->c - 1);
+//     int right = utils::clamp(col + (diameter - 1) / 2, 0, this->c - 1);
 
-    int num_values = (bottom - top + 1) * (right - left + 1);
-    int values[num_values];
-    int count = 0;
+//     int num_values = (bottom - top + 1) * (right - left + 1);
+//     int values[num_values];
+//     int count = 0;
 
-    for (int r = top; r <= bottom; ++r) {
-        copy(
-            grid + left + r * this->r,
-            grid + right + r * this->r + 1,
-            values + count
-        );
-        count += right - left + 1;
-    }
+//     for (int r = top; r <= bottom; ++r) {
+//         copy(
+//             grid + left + r * this->r,
+//             grid + right + r * this->r + 1,
+//             values + count
+//         );
+//         count += right - left + 1;
+//     }
 
-    int middle = (num_values - 1) / 2;
+//     int middle = (num_values - 1) / 2;
 
-    return select_kth(values, 0, num_values - 1, middle);
-}
+//     return select_kth(values, 0, num_values - 1, middle);
+// }
 
 void Grid::applyMedianFilter(int diameter) {
     using namespace std;
 
     int * new_grid = new int[this->r * this->c];
 
-    for (int row = 0; row < this->r; ++row)
-        for (int col = 0; col < this->c; ++col)
-            new_grid[row * this->r + col] = this->medianFilter(row, col, diameter);
+    cudaSetDevice(0);
+    cudaMalloc(&d_grid, this->r * this->c * sizeof(float));
+    cudaMalloc(&d_result, this->r * this->c * sizeof(float));
+    
+    cudaMemcpy(d_grid, this->grid, this->r * this->c * sizeof(float), cudaMemcpyHostToDevice);
+
+    dim3 dimBlock(16,16);
+    dim3 dimGrid(
+        this->r / dimBlock.x + 1,
+        this->c / dimBlock.y + 1
+    );
+
+    filter<<<dimGrid, dimBlock>>>(d_grid, d_result, this->r, this->c, diameter);
+    
+    cudaMemcpy(new_grid, d_result, this->r * this->c * sizeof(float), cudaMemcpyDeviceToHost);
+    cudaFree(d_grid);
+    cudaFree(d_result);
 
     delete [] grid;
-    grid = new_grid;    
+    grid = new_grid;
+
+    cudaDeviceSynchronize();
+    cudaError_t error = cudaGetLastError();
+    if(error!=cudaSuccess)
+    {
+       cout << cudaGetErrorString(error) << endl;
+       exit(-1);
+    }
 }
 
 void Grid::printToFile(std::string filename) {
@@ -206,46 +231,46 @@ void Grid::printToFile(std::string filename) {
     utils::outputToCSV(this->grid, this->r, this->c, filename);
 }
 
-int Grid::select_kth(int * list, int left, int right, int k) {
-    if (left == right)
-        return list[left];
+// int Grid::select_kth(int * list, int left, int right, int k) {
+//     if (left == right)
+//         return list[left];
 
-    int pivot_index;
-    while(true) {
-        pivot_index = left + (int)(((float)rand() / RAND_MAX) * (right - left));
-        pivot_index = partition(list, left, right, pivot_index);
+//     int pivot_index;
+//     while(true) {
+//         pivot_index = left + (int)(((float)rand() / RAND_MAX) * (right - left));
+//         pivot_index = partition(list, left, right, pivot_index);
 
-        if (k == pivot_index)
-            return list[k];
-        else if (k < pivot_index)
-            right = pivot_index - 1;
-        else
-            left = pivot_index + 1;
-    }
-}
+//         if (k == pivot_index)
+//             return list[k];
+//         else if (k < pivot_index)
+//             right = pivot_index - 1;
+//         else
+//             left = pivot_index + 1;
+//     }
+// }
 
-inline int Grid::partition(int * list, int left, int right, int pivot_index) {
-    int pivot_value = list[pivot_index];
+// inline int Grid::partition(int * list, int left, int right, int pivot_index) {
+//     int pivot_value = list[pivot_index];
 
-    // Move pivot to the end
-    list[pivot_index] = list[right];
-    list[right] = pivot_value;
+//     // Move pivot to the end
+//     list[pivot_index] = list[right];
+//     list[right] = pivot_value;
 
-    int store_index = left;
+//     int store_index = left;
 
-    for (int i = left; i < right; ++i) {
-        if (list[i] < pivot_value) {
-            int temp = list[store_index];
-            list[store_index] = list[i];
-            list[i] = temp;
+//     for (int i = left; i < right; ++i) {
+//         if (list[i] < pivot_value) {
+//             int temp = list[store_index];
+//             list[store_index] = list[i];
+//             list[i] = temp;
 
-            ++store_index;
-        }
-    }
+//             ++store_index;
+//         }
+//     }
 
-    int temp = list[store_index];
-    list[store_index] = list[right];
-    list[right] = temp;
+//     int temp = list[store_index];
+//     list[store_index] = list[right];
+//     list[right] = temp;
 
-    return store_index;
-}
+//     return store_index;
+// }

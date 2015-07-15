@@ -4,6 +4,8 @@
 class Grid {
     private:
         int * grid;
+        int * d_grid;
+        int * d_result;
         int r;
         int c;
 
