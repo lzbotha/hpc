@@ -138,29 +138,30 @@ __global__ void filter(int * grid, int * result, int rows, int cols, int diamete
     int col = blockIdx.y * blockDim.y + threadIdx.y;
 
     if(row < rows and col < cols){
-        // int top = clamp(row - (diameter - 1) / 2, 0, rows - 1);
-        // int bottom = clamp(row + (diameter - 1) / 2, 0, rows - 1);
-        // int left = clamp(col - (diameter - 1) / 2, 0, cols - 1);
-        // int right = clamp(col + (diameter - 1) / 2, 0, cols - 1);
+        int top = clamp(row - (diameter - 1) / 2, 0, rows - 1);
+        int bottom = clamp(row + (diameter - 1) / 2, 0, rows - 1);
+        int left = clamp(col - (diameter - 1) / 2, 0, cols - 1);
+        int right = clamp(col + (diameter - 1) / 2, 0, cols - 1);
 
-        // int num_values = (bottom - top + 1) * (right - left + 1);
-        // int values[441];
-        // int padding = 441 - diameter * diameter;
+        int num_values = (bottom - top + 1) * (right - left + 1);
+        int values[9];
+        // int padding = 9 - diameter * diameter;
 
         // for (int i = 0; i < padding; ++i)
         //     values[i] = -1;
 
         // int count = padding;
+        int count = 0;
 
-        // for (int r = top; r <= bottom; ++r) {
-        //     for (int c = left; c <= right; ++c) {
-        //         values[count] = grid[c + r * cols];
-        //         ++count;
-        //     }
-        // }
+        for (int r = top; r <= bottom; ++r) {
+            for (int c = left; c <= right; ++c) {
+                values[count] = grid[c + r * cols];
+                ++count;
+            }
+        }
 
-        // result[col + row * cols] = select_kth(values, 0, num_values - 1, padding + (num_values - 1) / 2 - 1);
-        result[col + row * cols] = -1;
+        result[col + row * cols] = select_kth(values, 0, num_values - 1, (num_values - 1) / 2);
+        // result[col + row * cols] = padding + (num_values - 1) / 2 - 1;
     }
 }
 
