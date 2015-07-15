@@ -85,6 +85,82 @@ void Grid::populateFromArray(int points, float * values) {
     }
 }
 
+__device__ int partition(int * list, int left, int right, int pivot_index) {
+    int pivot_value = list[pivot_index];
+
+    // Move pivot to the end
+    list[pivot_index] = list[right];
+    list[right] = pivot_value;
+
+    int store_index = left;
+
+    for (int i = left; i < right; ++i) {
+        if (list[i] < pivot_value) {
+            int temp = list[store_index];
+            list[store_index] = list[i];
+            list[i] = temp;
+
+            ++store_index;
+        }
+    }
+
+    int temp = list[store_index];
+    list[store_index] = list[right];
+    list[right] = temp;
+
+    return store_index;
+}
+
+__device__ int select_kth(int * list, int left, int right, int k) {
+    if (left == right)
+        return list[left];
+
+    int pivot_index;
+    while(true) {
+        pivot_index = left + (right - left) / 2;// + (int)(((float)rand() / RAND_MAX) * (right - left));
+        pivot_index = partition(list, left, right, pivot_index);
+
+        if (k == pivot_index)
+            return list[k];
+        else if (k < pivot_index)
+            right = pivot_index - 1;
+        else
+            left = pivot_index + 1;
+    }
+}
+
+__device__ int clamp(int x, int a, int b) {
+    return max(a, min(b, x));
+}
+
+__global__ void filter(int * grid, int rows, int cols, int diameter) {
+    int row = 0;
+    int col = 0;
+
+    int top = clamp(row - (diameter - 1) / 2, 0, rows - 1);
+    int bottom = clamp(row + (diameter - 1) / 2, 0, rows - 1);
+    int left = clamp(col - (diameter - 1) / 2, 0, cols - 1);
+    int right = clamp(col + (diameter - 1) / 2, 0, cols - 1);
+
+    int num_values = (bottom - top + 1) * (right - left + 1);
+    int values[441];
+    int padding = 441 - diameter * diameter;
+
+    for (int i = 0; i < padding; ++i)
+        values[i] = -1;
+
+    int count = padding;
+
+    for (int r = top; r <= bottom; ++r) {
+        for (int c = left; c <= right; ++c) {
+            values[count] = grid[c + r * cols];
+            ++count;
+        }
+    }
+
+    int ans = select_kth(values, 0, num_values - 1, padding + (num_values - 1) / 2 - 1);
+}
+
 
 int Grid::medianFilter(int row, int col, int diameter) {
     using namespace std;
@@ -108,10 +184,6 @@ int Grid::medianFilter(int row, int col, int diameter) {
     }
 
     int middle = (num_values - 1) / 2;
-    // cout << middle << endl;
-
-    // nth_element(values, values + middle, values + num_values);
-    // return values[middle];
 
     return select_kth(values, 0, num_values - 1, middle);
 }
