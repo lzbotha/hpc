@@ -26,6 +26,9 @@ class Grid {
         int medianFilter(int row, int col, int diameter);
         void applyMedianFilter(int diameter);
         void printToFile(std::string filename);
+
+        int partition(int * list, int left, int right, int pivot_index);
+        int select_kth(int * list, int left, int right, int k);
 };
 
 #endif

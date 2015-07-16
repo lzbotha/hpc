@@ -163,6 +163,8 @@ int Grid::medianFilter(int row, int col, int diameter) {
     nth_element(values, values + middle, values + num_values);
 
     return values[middle];
+
+    // return select_kth(values, 0, num_values - 1, middle);
 }
 
 void Grid::applyMedianFilter(int diameter) {
@@ -181,4 +183,48 @@ void Grid::applyMedianFilter(int diameter) {
 void Grid::printToFile(std::string filename) {
     using namespace std;
     utils::outputToCSV(this->grid, this->r, this->c, filename);
+}
+
+int Grid::partition(int * list, int left, int right, int pivot_index) {
+    int pivot_value = list[pivot_index];
+
+    // Move pivot to the end
+    list[pivot_index] = list[right];
+    list[right] = pivot_value;
+
+    int store_index = left;
+
+    for (int i = left; i < right; ++i) {
+        if (list[i] < pivot_value) {
+            int temp = list[store_index];
+            list[store_index] = list[i];
+            list[i] = temp;
+
+            ++store_index;
+        }
+    }
+
+    int temp = list[store_index];
+    list[store_index] = list[right];
+    list[right] = temp;
+
+    return store_index;
+}
+
+int Grid::select_kth(int * list, int left, int right, int k) {
+    if (left == right)
+        return list[left];
+
+    int pivot_index;
+    while(true) {
+        pivot_index = left + (right - left) / 2;// + (int)(((float)rand() / RAND_MAX) * (right - left));
+        pivot_index = partition(list, left, right, pivot_index);
+
+        if (k == pivot_index)
+            return list[k];
+        else if (k < pivot_index)
+            right = pivot_index - 1;
+        else
+            left = pivot_index + 1;
+    }
 }
