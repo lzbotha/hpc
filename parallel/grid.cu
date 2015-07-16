@@ -101,11 +101,22 @@ void Grid::populateFromArray(int points, float * values) {
         }
     }
 
-    for (int i = 0; i < num_threads; ++i) {
-        for (int r = 0; r < this->r; ++r)
-            for(int c = 0; c < this->c; ++c){
-                this->grid[c + r * this->c] += grids[i][c + r * this->c];
-            }
+    int row_offset = this->r / num_threads + 1;
+    #pragma omp parallel
+    {
+        int tid = omp_get_thread_num();
+
+        int current = tid * row_offset;
+        int end = current + row_offset;
+
+        while (current < end and current < this->r) {
+
+            for (int c = 0; c < this->c; ++c)
+                for (int g = 0; g < num_threads; ++g)
+                    this->grid[c + current * this->c] += grids[g][c + current * this->c];
+
+            ++current;
+        }
     }
 
     for (int i = 0; i < num_threads; ++i)
