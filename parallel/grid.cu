@@ -196,13 +196,8 @@ void Grid::applyMedianFilter(int diameter) {
     );
 
     filter<<<dimGrid, dimBlock>>>(d_grid, d_result, this->r, this->c, diameter);
-    cudaError_t error = cudaGetLastError();
-    if(error!=cudaSuccess)
-    {
-       cout << "Failure in launching kernel" << endl;
-       cout << cudaGetErrorString(error) << endl;
-       exit(-1);
-    }
+
+    CUDA_SAFE_CALL(cudaDeviceSynchronize(), "Running kernel failed");
 
     CUDA_SAFE_CALL(cudaMemcpy(
         new_grid, d_result, this->r * this->c * sizeof(float), cudaMemcpyDeviceToHost),
