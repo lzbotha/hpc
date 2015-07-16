@@ -5,12 +5,13 @@
 #include <iterator>
 #include <omp.h>
 #include <cuda_runtime.h>
+#include <cstdio>
 
 #include "grid.h"
 #include "utils.h"
 
 Grid::Grid(int rows, int cols) : r(rows), c(cols){
-    this->grid = new int[r * c];
+    this->grid = new int[r * c]();
     this->clear();
 }
 
@@ -69,20 +70,47 @@ void Grid::populateFromArray(int points, float * values) {
     float bucket_row_width = 1.0f / this->r;
     float bucket_col_width = 1.0f / this->c;
 
-    for (int p = 0; p < points; ++p){
-        float x = values[2 * p];
-        float y = values[2 * p + 1];
+    int num_threads = omp_get_num_procs();
+    int ** grids = new int*[num_threads];
+    int offset = points / num_threads + 1;
+    if (offset % 2 == 1)
+        ++offset;
+    
+    #pragma omp parallel
+    {
+        int tid = omp_get_thread_num();
+        grids[tid] = new int[this->r * this->c]();
 
-        int bucket_row = (int)(x / bucket_row_width);
-        if (bucket_row >= this->r)
-            bucket_row = this->r - 1;
+        int current = tid * offset;
+        int end = current + offset;
 
-        int bucket_col = (int)(y / bucket_col_width);
-        if (y >= this->c)
-            bucket_col = this->c - 1;
+        while (current < end and current < points) {
+            float x = values[2 * current];
+            float y = values[2 * current + 1];
 
-        ++this->grid[bucket_col + bucket_row * this->r];
+            int bucket_row = (int)(x / bucket_row_width);
+            if (bucket_row >= this->r)
+                bucket_row = this->r - 1;
+
+            int bucket_col = (int)(y / bucket_col_width);
+            if (y >= this->c)
+                bucket_col = this->c - 1;
+
+            ++grids[tid][bucket_col + bucket_row * this->c];
+            current += 2;
+        }
     }
+
+    for (int i = 0; i < num_threads; ++i) {
+        for (int r = 0; r < this->r; ++r)
+            for(int c = 0; c < this->c; ++c){
+                this->grid[c + r * this->c] += grids[i][c + r * this->c];
+            }
+    }
+
+    for (int i = 0; i < num_threads; ++i)
+        delete[] grids[i];
+    delete[] grids;
 }
 
 __device__ int partition(int * list, int left, int right, int pivot_index) {
