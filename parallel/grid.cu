@@ -64,15 +64,68 @@ void Grid::populateFromFile(std::string filename) {
     delete values;
 }
 
+void Grid::populateFromArray(int points, float * values) {
+    using namespace std;
+
+    float bucket_row_width = 1.0f / this->r;
+    float bucket_col_width = 1.0f / this->c;
+
+    for (int p = 0; p < points; ++p){
+        float x = values[2 * p];
+        float y = values[2 * p + 1];
+
+        int bucket_row = (int)(x / bucket_row_width);
+        if (bucket_row >= this->r)
+            bucket_row = this->r - 1;
+
+        int bucket_col = (int)(y / bucket_col_width);
+        if (y >= this->c)
+            bucket_col = this->c - 1;
+
+        ++this->grid[bucket_col + bucket_row * this->r];
+    }
+}
+
 // void Grid::populateFromArray(int points, float * values) {
 //     using namespace std;
 
 //     float bucket_row_width = 1.0f / this->r;
 //     float bucket_col_width = 1.0f / this->c;
 
+//     int num_threads = omp_get_num_procs();
+//     int ** grids = new int*[num_threads];
+
+//     int current = 0;
+//     omp_lock_t current_lock;
+//     omp_init_lock(&current_lock);
+
+//     #pragma omp parallel
+//     {
+//         int tid = omp_get_thread_num();
+//         grids[tid] = new int[this->r * this->c]();
+//     }
+
+//     // #pragma omp parallel for
 //     for (int p = 0; p < points; ++p){
-//         float x = values[2 * p];
-//         float y = values[2 * p + 1];
+//         int tid = omp_get_thread_num();
+
+//         float x;
+//         float y;
+
+//         omp_set_lock(&current_lock);
+
+//         if (current < points) {
+//             x = values[2 * current];
+//             y = values[2 * current + 1];
+
+//             ++current;
+//             omp_unset_lock(&current_lock);
+//         }
+//         else {
+//             omp_unset_lock(&current_lock);
+//             continue;
+//         }
+                
 
 //         int bucket_row = (int)(x / bucket_row_width);
 //         if (bucket_row >= this->r)
@@ -82,69 +135,96 @@ void Grid::populateFromFile(std::string filename) {
 //         if (y >= this->c)
 //             bucket_col = this->c - 1;
 
-//         ++this->grid[bucket_col + bucket_row * this->r];
+//         ++grids[tid][bucket_col + bucket_row * this->c];
 //     }
+
+//     omp_destroy_lock(&current_lock);
+
+
+//     int row_offset = this->r / num_threads + 1;
+//     #pragma omp parallel
+//     {
+//         int tid = omp_get_thread_num();
+
+//         int current = tid * row_offset;
+//         int end = current + row_offset;
+
+//         while (current < end and current < this->r) {
+
+//             for (int c = 0; c < this->c; ++c)
+//                 for (int g = 0; g < num_threads; ++g)
+//                     this->grid[c + current * this->c] += grids[g][c + current * this->c];
+
+//             ++current;
+//         }
+//     }
+
+//     for (int i = 0; i < num_threads; ++i)
+//         delete[] grids[i];
+//     delete[] grids;
 // }
 
-void Grid::populateFromArray(int points, float * values) {
-    using namespace std;
+// void Grid::populateFromArray(int points, float * values) {
+//     using namespace std;
 
-    float bucket_row_width = 1.0f / this->r;
-    float bucket_col_width = 1.0f / this->c;
+//     float bucket_row_width = 1.0f / this->r;
+//     float bucket_col_width = 1.0f / this->c;
 
-    int num_threads = omp_get_num_procs();
-    int ** grids = new int*[num_threads];
-    int offset = points / num_threads + 1;
-    if (offset % 2 == 1)
-        ++offset;
+//     int num_threads = omp_get_num_procs();
+//     int ** grids = new int*[num_threads];
+//     int offset = points / num_threads + 1;
+//     if (offset % 2 == 1)
+//         ++offset;
     
-    #pragma omp parallel
-    {
-        int tid = omp_get_thread_num();
-        grids[tid] = new int[this->r * this->c]();
+//     #pragma omp parallel
+//     {
+//         int tid = omp_get_thread_num();
+//         grids[tid] = new int[this->r * this->c]();
 
-        int current = tid * offset;
-        int end = current + offset;
+//         int current = tid * offset;
+//         int end = current + offset;
 
-        while (current < end and current < points) {
-            float x = values[2 * current];
-            float y = values[2 * current + 1];
+//         while (current < end and current < points) {
+//             float x = values[2 * current];
+//             float y = values[2 * current + 1];
 
-            int bucket_row = (int)(x / bucket_row_width);
-            if (bucket_row >= this->r)
-                bucket_row = this->r - 1;
+//             int bucket_row = (int)(x / bucket_row_width);
+//             if (bucket_row >= this->r)
+//                 bucket_row = this->r - 1;
 
-            int bucket_col = (int)(y / bucket_col_width);
-            if (y >= this->c)
-                bucket_col = this->c - 1;
+//             int bucket_col = (int)(y / bucket_col_width);
+//             if (y >= this->c)
+//                 bucket_col = this->c - 1;
 
-            ++grids[tid][bucket_col + bucket_row * this->c];
-            current += 2;
-        }
-    }
+//             ++grids[tid][bucket_col + bucket_row * this->c];
+//             ++current;
+//         }
+//     }
 
-    int row_offset = this->r / num_threads + 1;
-    #pragma omp parallel
-    {
-        int tid = omp_get_thread_num();
+//     int row_offset = this->r / num_threads + 1;
+//     #pragma omp parallel
+//     {
+//         int tid = omp_get_thread_num();
 
-        int current = tid * row_offset;
-        int end = current + row_offset;
+//         int current = tid * row_offset;
+//         int end = current + row_offset;
 
-        while (current < end and current < this->r) {
+//         while (current < end and current < this->r) {
 
-            for (int c = 0; c < this->c; ++c)
-                for (int g = 0; g < num_threads; ++g)
-                    this->grid[c + current * this->c] += grids[g][c + current * this->c];
+//             for (int c = 0; c < this->c; ++c)
+//                 for (int g = 0; g < num_threads; ++g)
+//                     this->grid[c + current * this->c] += grids[g][c + current * this->c];
 
-            ++current;
-        }
-    }
+//             ++current;
+//         }
+//     }
 
-    for (int i = 0; i < num_threads; ++i)
-        delete[] grids[i];
-    delete[] grids;
-}
+
+
+//     for (int i = 0; i < num_threads; ++i)
+//         delete[] grids[i];
+//     delete[] grids;
+// }
 
 __device__ int partition(int * list, int left, int right, int pivot_index) {
     int pivot_value = list[pivot_index];
