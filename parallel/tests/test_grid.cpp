@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include "test_grid.h"
+#include "../utils.h"
 
 void TestGrid::setUp() {
     using namespace std;
@@ -63,7 +64,7 @@ void TestGrid::testPopulatingFromFile() {
 }
 
 void TestGrid::testMedianFilter() {
-    
+    g->clear();    
 }
 
 void TestGrid::testFileOutput() {
@@ -76,5 +77,24 @@ void TestGrid::testFileOutput() {
 }
 
 void TestGrid::testPopulatingFromArray() {
-    // TODO: code this test
+    g->clear();
+
+    int points = utils::getFileSize("Points_[1.0e+01]_Noise_[030]_Normal.bin") / 4 / 2;
+    float * values = utils::readFile("Points_[1.0e+01]_Noise_[030]_Normal.bin");
+
+    g->populateFromArray(points, values);
+
+    // std::cout << std::endl;
+    // g->print();
+
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(3, 7));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(3, 3));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(4, 2));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(4, 4));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(5, 6));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(5, 3));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(5, 5));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(6, 2));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(7, 6));
+    CPPUNIT_ASSERT_EQUAL(1, (*g)(9, 5));
 }
