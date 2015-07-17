@@ -346,9 +346,22 @@ __global__ void filter(int * grid, int * result, int rows, int cols, int diamete
         //         ++count;
         //     }
         // }
+        int r_start = 0;
+        int r_end = 21;
+        int c_start = 0;
+        int c_end = 21;
 
-        for (int r = 0; r < 21; ++r) {
-            for (int c = 0; c < 21; ++c) {
+        if (blockIdx.x == 0)
+            r_start = 10;
+        if (blockIdx.x == gridDim.x - 1)
+            r_end = 11;
+        if (blockIdx.y == 0)
+            c_start = 10;
+        if (blockIdx.y == gridDim.y - 1)
+            r_end = 11;
+
+        for (int r = r_start; r < r_end; ++r) {
+            for (int c = c_start; c < c_end; ++c) {
                 values[count] = cache[(c + threadIdx.y) + (r + threadIdx.x) * 36];
                 ++count;
             }
