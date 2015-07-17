@@ -274,24 +274,82 @@ __device__ int clamp(int x, int a, int b) {
     return max(a, min(b, x));
 }
 
+// __global__ void filter(int * grid, int * result, int rows, int cols, int diameter) {
+//     int row = blockIdx.x * blockDim.x + threadIdx.x;
+//     int col = blockIdx.y * blockDim.y + threadIdx.y;
+
+//     if(row < rows and col < cols){
+//         int top = clamp(row - (diameter - 1) / 2, 0, rows - 1);
+//         int bottom = clamp(row + (diameter - 1) / 2, 0, rows - 1);
+//         int left = clamp(col - (diameter - 1) / 2, 0, cols - 1);
+//         int right = clamp(col + (diameter - 1) / 2, 0, cols - 1);
+
+//         int num_values = (bottom - top + 1) * (right - left + 1);
+//         int values[441];
+        
+//         int count = 0;
+
+//         for (int r = top; r <= bottom; ++r) {
+//             for (int c = left; c <= right; ++c) {
+//                 values[count] = grid[c + r * cols];
+//                 ++count;
+//             }
+//         }
+
+//         result[col + row * cols] = select_kth(values, 0, num_values - 1, (num_values - 1) / 2);
+//     }
+// }
+
 __global__ void filter(int * grid, int * result, int rows, int cols, int diameter) {
     int row = blockIdx.x * blockDim.x + threadIdx.x;
     int col = blockIdx.y * blockDim.y + threadIdx.y;
 
+    __shared__ int cache[1296];
+    int tlcx = blockIdx.x * blockDim.x - 10;
+    int tlcy = blockIdx.y * blockDim.y - 10;
+
+    // int index = (threadIdx.y + threadIdx.x * blockDim.y) * 5;
+    // for (int i = 0; i < 5;++i){
+    //     int current_index = ((index + i) % 36 + tlcy) + ((index + i) / 36 + tlcx) * 36;
+
+    //     if (current_index < rows and current_index > 0)
+    //         cache[index + i] = grid[current_index];
+    // }
+
+    if (threadIdx.x == 0 and threadIdx.y == 0) {
+        for (int r = 0; r < 36; ++r){
+            for (int c = 0; c < 36; ++c) {
+                if (c + tlcy >= 0 and r + tlcx >= 0 and c + tlcy < cols and r + tlcx < rows)
+                    cache[c + r * 36] = grid[(c + tlcy) + (r + tlcx) * rows];
+            }
+        }
+    }
+
+    __syncthreads();
+
     if(row < rows and col < cols){
-        int top = clamp(row - (diameter - 1) / 2, 0, rows - 1);
-        int bottom = clamp(row + (diameter - 1) / 2, 0, rows - 1);
-        int left = clamp(col - (diameter - 1) / 2, 0, cols - 1);
-        int right = clamp(col + (diameter - 1) / 2, 0, cols - 1);
+        // This is all fucked
+        // only values in the block are being considered not all values in cache
+        int top = clamp(threadIdx.x - (diameter - 1) / 2, 0, blockDim.x - 1);
+        int bottom = clamp(threadIdx.x + (diameter - 1) / 2, 0, blockDim.x - 1);
+        int left = clamp(threadIdx.y - (diameter - 1) / 2, 0, blockDim.y - 1);
+        int right = clamp(threadIdx.y + (diameter - 1) / 2, 0, blockDim.y - 1);
 
         int num_values = (bottom - top + 1) * (right - left + 1);
         int values[441];
         
         int count = 0;
 
-        for (int r = top; r <= bottom; ++r) {
-            for (int c = left; c <= right; ++c) {
-                values[count] = grid[c + r * cols];
+        // for (int r = top; r <= bottom; ++r) {
+        //     for (int c = left; c <= right; ++c) {
+        //         values[count] = cache[c + r * 36];
+        //         ++count;
+        //     }
+        // }
+
+        for (int r = 0; r < 21; ++r) {
+            for (int c = 0; c < 21; ++c) {
+                values[count] = cache[(c + threadIdx.y) + (r + threadIdx.x) * 36];
                 ++count;
             }
         }
