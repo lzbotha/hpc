@@ -328,24 +328,9 @@ __global__ void filter(int * grid, int * result, int rows, int cols, int diamete
     __syncthreads();
 
     if(row < rows and col < cols){
-        // This is all fucked
-        // only values in the block are being considered not all values in cache
-        int top = clamp(threadIdx.x - (diameter - 1) / 2, 0, blockDim.x - 1);
-        int bottom = clamp(threadIdx.x + (diameter - 1) / 2, 0, blockDim.x - 1);
-        int left = clamp(threadIdx.y - (diameter - 1) / 2, 0, blockDim.y - 1);
-        int right = clamp(threadIdx.y + (diameter - 1) / 2, 0, blockDim.y - 1);
-
-        int num_values = (bottom - top + 1) * (right - left + 1);
         int values[441];
-        
         int count = 0;
 
-        // for (int r = top; r <= bottom; ++r) {
-        //     for (int c = left; c <= right; ++c) {
-        //         values[count] = cache[c + r * 36];
-        //         ++count;
-        //     }
-        // }
         int r_start = 0;
         int r_end = 21;
         int c_start = 0;
@@ -353,11 +338,11 @@ __global__ void filter(int * grid, int * result, int rows, int cols, int diamete
 
         if (blockIdx.x == 0)
             r_start = 10;
-        if (blockIdx.x == gridDim.x - 1)
+        if (blockIdx.x == gridDim.x)
             r_end = 11;
         if (blockIdx.y == 0)
             c_start = 10;
-        if (blockIdx.y == gridDim.y - 1)
+        if (blockIdx.y == gridDim.y)
             r_end = 11;
 
         for (int r = r_start; r < r_end; ++r) {
@@ -367,7 +352,7 @@ __global__ void filter(int * grid, int * result, int rows, int cols, int diamete
             }
         }
 
-        result[col + row * cols] = select_kth(values, 0, num_values - 1, (num_values - 1) / 2);
+        result[col + row * cols] = select_kth(values, 0, count - 1, (count - 1) / 2);
     }
 }
 
