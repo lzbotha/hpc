@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     total = clock();
 
     Grid g(grid_dim, grid_dim);
-    cout << "Creating grid object: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
+    cout << "Creating grid object ( "  << grid_dim << "): " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
     start = std::clock();
 
     int points = utils::getFileSize(input_file) / sizeof(float) / 2;
@@ -36,13 +36,13 @@ int main(int argc, char *argv[]) {
     start = std::clock();
 
     g.applyMedianFilter(filter_dim);
-    cout << "Applying median filter: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
+    cout << "Applying median filter (" << filter_dim << "): " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
     start = std::clock();
 
     g.printToFile(output_file);
     cout << "Printing to file: " << (clock() - start) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
 
-    cout << "Total: " << (clock() - total) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl;
+    cout << "Total: " << (clock() - total) / (double)(CLOCKS_PER_SEC / 1000) << " ms" << endl << endl;
 
     delete[] values;
     return 0;
