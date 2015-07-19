@@ -300,59 +300,83 @@ __device__ int clamp(int x, int a, int b) {
 //     }
 // }
 
+// __global__ void filter(int * grid, int * result, int rows, int cols, int diameter) {
+//     int row = blockIdx.x * blockDim.x + threadIdx.x;
+//     int col = blockIdx.y * blockDim.y + threadIdx.y;
+
+//     int half_diam = 10;
+
+//     __shared__ int cache[1296];
+//     int tlcx = blockIdx.x * blockDim.x - half_diam;
+//     int tlcy = blockIdx.y * blockDim.y - half_diam;
+
+//     for (int i = 0; i < 5; ++i) {
+//         int index = (threadIdx.y + threadIdx.x * blockDim.y) * 5 + i;
+
+//         int r = index / 36;
+//         int c = index % 36;
+        
+//         if (c + tlcy >= 0 and r + tlcx >= 0 and c + tlcy < cols and r + tlcx < rows)
+//             cache[c + r * 36] = grid[(c + tlcy) + (r + tlcx) * rows];
+//     }
+
+//     __syncthreads();
+
+//     if(row < rows and col < cols){
+//         int values[441];
+//         int count = 0;
+
+//         int r_start = 0;
+//         int r_end = 21;
+//         int c_start = 0;
+//         int c_end = 21;
+
+//         if (blockIdx.x == 0)
+//             r_start = half_diam;
+//         else if (blockIdx.x == gridDim.x)
+//             r_end = 11;
+        
+//         if (blockIdx.y == 0)
+//             c_start = half_diam;
+//         else if (blockIdx.y == gridDim.y)
+//             r_end = 11;
+
+//         for (int r = r_start; r < r_end; ++r) {
+//             for (int c = c_start; c < c_end; ++c) {
+//                 values[count] = cache[(c + threadIdx.y) + (r + threadIdx.x) * 36];
+//                 ++count;
+//             }
+//         }
+
+//         result[col + row * cols] = select_kth(values, 0, count - 1, (count - 1) / 2);
+//     }
+// }
+
 __global__ void filter(int * grid, int * result, int rows, int cols, int diameter) {
     int row = blockIdx.x * blockDim.x + threadIdx.x;
     int col = blockIdx.y * blockDim.y + threadIdx.y;
 
-    __shared__ int cache[1296];
-    int tlcx = blockIdx.x * blockDim.x - 10;
-    int tlcy = blockIdx.y * blockDim.y - 10;
+    __shared__ int values[4*4*21*21];
 
-    // int index = (threadIdx.y + threadIdx.x * blockDim.y) * 5;
-    // for (int i = 0; i < 5;++i){
-    //     int current_index = ((index + i) % 36 + tlcy) + ((index + i) / 36 + tlcx) * 36;
+    if(row < rows and col < cols) {
+        int top = clamp(row - (diameter - 1) / 2, 0, rows - 1);
+        int bottom = clamp(row + (diameter - 1) / 2, 0, rows - 1);
+        int left = clamp(col - (diameter - 1) / 2, 0, cols - 1);
+        int right = clamp(col + (diameter - 1) / 2, 0, cols - 1);
 
-    //     if (current_index < rows and current_index > 0)
-    //         cache[index + i] = grid[current_index];
-    // }
-
-    if (threadIdx.x == 0 and threadIdx.y == 0) {
-        for (int r = 0; r < 36; ++r){
-            for (int c = 0; c < 36; ++c) {
-                if (c + tlcy >= 0 and r + tlcx >= 0 and c + tlcy < cols and r + tlcx < rows)
-                    cache[c + r * 36] = grid[(c + tlcy) + (r + tlcx) * rows];
-            }
-        }
-    }
-
-    __syncthreads();
-
-    if(row < rows and col < cols){
-        int values[441];
+        // int num_values = (bottom - top + 1) * (right - left + 1);
+        
         int count = 0;
+        int start = (threadIdx.y + threadIdx.x * blockDim.y) * 21 * 21;
 
-        int r_start = 0;
-        int r_end = 21;
-        int c_start = 0;
-        int c_end = 21;
-
-        if (blockIdx.x == 0)
-            r_start = 10;
-        if (blockIdx.x == gridDim.x)
-            r_end = 11;
-        if (blockIdx.y == 0)
-            c_start = 10;
-        if (blockIdx.y == gridDim.y)
-            r_end = 11;
-
-        for (int r = r_start; r < r_end; ++r) {
-            for (int c = c_start; c < c_end; ++c) {
-                values[count] = cache[(c + threadIdx.y) + (r + threadIdx.x) * 36];
+        for (int r = top; r <= bottom; ++r) {
+            for (int c = left; c <= right; ++c) {
+                values[start + count] = grid[c + r * cols];
                 ++count;
             }
         }
 
-        result[col + row * cols] = select_kth(values, 0, count - 1, (count - 1) / 2);
+        result[col + row * cols] = select_kth(values, start, start + count - 1, start + (count - 1) / 2);
     }
 }
 
@@ -368,6 +392,10 @@ void CUDA_SAFE_CALL(cudaError_t error, std::string error_message) {
 
 void Grid::applyMedianFilter(int diameter) {
     using namespace std;
+
+    // cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
+
+    int BLOCK_SIZE = 4;
 
     int * new_grid = new int[this->r * this->c];
 
@@ -386,7 +414,7 @@ void Grid::applyMedianFilter(int diameter) {
         "Failed to copy grid to d_grid"
     );
 
-    dim3 dimBlock(16,16);
+    dim3 dimBlock(BLOCK_SIZE,BLOCK_SIZE);
     dim3 dimGrid(
         this->r / dimBlock.x + 1,
         this->c / dimBlock.y + 1

@@ -9,8 +9,6 @@ class Grid {
         int r;
         int c;
 
-
-
     public:
         Grid(int rows, int cols);
         ~Grid();
