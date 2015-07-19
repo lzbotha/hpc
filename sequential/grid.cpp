@@ -160,11 +160,11 @@ int Grid::medianFilter(int row, int col, int diameter) {
     int middle = (num_values - 1) / 2;
     // cout << middle << endl;
 
-    nth_element(values, values + middle, values + num_values);
+    // nth_element(values, values + middle, values + num_values);
 
-    return values[middle];
+    // return values[middle];
 
-    // return select_kth(values, 0, num_values - 1, middle);
+    return select_kth(values, 0, num_values - 1, middle);
 }
 
 void Grid::applyMedianFilter(int diameter) {
