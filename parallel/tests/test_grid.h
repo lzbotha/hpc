@@ -19,6 +19,7 @@ class TestGrid : public CppUnit::TestFixture {
 
     private:
         Grid * g;
+        Grid * b;
 
     public:
         // Memory managemenet stuff

@@ -6,6 +6,7 @@
 void TestGrid::setUp() {
     using namespace std;
     g = new Grid(10, 10);
+    b = new Grid(512, 512);
 }
 
 void TestGrid::tearDown() {
@@ -64,7 +65,47 @@ void TestGrid::testPopulatingFromFile() {
 }
 
 void TestGrid::testMedianFilter() {
-    g->clear();    
+    using namespace std;
+    g->clear();
+    b->clear();
+    for (int r = 0; r < 10; ++r) {
+        for (int c = 0; c < 10; ++c) {
+            (*g)(r,c) = 10;
+            if (r == c)
+                (*g)(r,c) = 100000;
+        }
+    }
+
+    g->applyMedianFilter(21);
+
+    for (int r = 0; r < 10; ++r) {
+        for (int c = 0; c < 10; ++c) {
+            if (10 != (*g)(r,c)){
+                cout << "r: " << r << " c: " << c << endl;
+                g->print();
+            }
+            CPPUNIT_ASSERT_EQUAL(10, (*g)(r,c));
+        }
+    }
+    
+    for (int r = 0; r < 512; ++r) {
+        for (int c = 0; c < 512; ++c) {
+            (*b)(r,c) = 10;
+            if (r == c)
+                (*b)(r,c) = 100000;
+        }
+    }
+
+    b->applyMedianFilter(21);
+
+    for (int r = 0; r < 512; ++r) {
+        for (int c = 0; c < 512; ++c) {
+            if (10 != (*b)(r,c)){
+                cout << "r: " << r << " c: " << c << endl;
+            }
+            CPPUNIT_ASSERT_EQUAL(10, (*b)(r,c));
+        }
+    }
 }
 
 void TestGrid::testFileOutput() {
